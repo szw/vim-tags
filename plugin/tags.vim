@@ -27,42 +27,15 @@ if !exists('g:vim_tags_project_tags_command')
     let g:vim_tags_project_tags_command = "!ctags -R 2>/dev/null &"
 endif
 
-if !exists('g:vim_tags_auto_generate_project_tags')
-    let g:vim_tags_auto_generate_project_tags = 1
-endif
-
 "Gemfile tags
 if !exists('g:vim_tags_gems_tags_command')
     let g:vim_tags_gems_tags_command = "!ctags -R -f gems.tags `bundle show --paths` 2>/dev/null &"
 endif
 
-if !exists('g:vim_tags_gems_tags_file')
-    let g:vim_tags_gems_tags_file = 'gems.tags'
-endif
-
-command! -nargs=0 TagsForGems :call s:generate_gems_tags()
-command! -nargs=0 TagsForProject :call s:generate_project_tags()
-
-"Auto generate ctags
-if filereadable('tags')
-    if g:vim_tags_auto_generate_project_tags
-        au BufWritePost * call s:generate_project_tags()
-    endif
-    call s:generate_gems_tags()
-
-    if filereadable(g:vim_tags_gems_tags_file)
-        set tags += g:vim_tags_gems_tags_file
-    endif
-endif
-
-fun! s:generate_project_tags(...)
-    silent! exe g:vim_tags_project_tags_command
-endfun
-
 fun! s:generate_gems_tags()
     let gemfile_time = getftime('Gemfile.lock')
     if gemfile_time > -1
-        let gems_time = getftime(g:vim_tags_gems_tags_file)
+        let gems_time = getftime('gems.tags')
         if gems_time > -1
             if gems_time < gemfile_time
                 silent! exe g:vim_tags_gems_tags_command
@@ -72,3 +45,13 @@ fun! s:generate_gems_tags()
         endif
     endif
 endfun
+
+"Auto generate ctags
+if filereadable('tags')
+    au BufWritePost * silent! exe g:vim_tags_project_tags_command
+    call s:generate_gems_tags()
+
+    if filereadable('gems.tags')
+        set tags += "gems.tags"
+    endif
+endif
