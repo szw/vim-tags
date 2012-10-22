@@ -32,7 +32,8 @@ if !exists('g:vim_tags_gems_tags_command')
     let g:vim_tags_gems_tags_command = "!ctags -R -f gems.tags `bundle show --paths` 2>/dev/null &"
 endif
 
-fun! s:generate_gems_tags()
+fun! s:generate_tags()
+    silent! exe g:vim_tags_project_tags_command
     let gemfile_time = getftime('Gemfile.lock')
     if gemfile_time > -1
         let gems_time = getftime('gems.tags')
@@ -42,14 +43,14 @@ fun! s:generate_gems_tags()
             endif
         else
             silent! exe g:vim_tags_gems_tags_command
+            set tags += "gems.tags"
         endif
     endif
 endfun
 
 "Auto generate ctags
 if filereadable('tags')
-    au BufWritePost * silent! exe g:vim_tags_project_tags_command
-    call s:generate_gems_tags()
+    au BufWritePost * call s:generate_tags()
 
     if filereadable('gems.tags')
         set tags += "gems.tags"
