@@ -28,12 +28,12 @@ endif
 
 "Main tags
 if !exists('g:vim_tags_project_tags_command')
-    let g:vim_tags_project_tags_command = "!ctags -R 2>/dev/null &"
+    let g:vim_tags_project_tags_command = "ctags -R 2>/dev/null &"
 endif
 
 "Gemfile tags
 if !exists('g:vim_tags_gems_tags_command')
-    let g:vim_tags_gems_tags_command = "!ctags -R -f gems.tags `bundle show --paths` 2>/dev/null &"
+    let g:vim_tags_gems_tags_command = "ctags -R -f gems.tags `bundle show --paths` 2>/dev/null &"
 endif
 
 set tags+=gems.tags
@@ -41,16 +41,16 @@ set tags+=gems.tags
 command! -nargs=0 TagsGenerate :call s:generate_tags(1)
 
 fun! s:generate_tags(redraw)
-    silent! exe g:vim_tags_project_tags_command
+    silent! exe '!' . g:vim_tags_project_tags_command
     let gemfile_time = getftime('Gemfile.lock')
     if gemfile_time > -1
         let gems_time = getftime('gems.tags')
         if gems_time > -1
             if gems_time < gemfile_time
-                silent! exe g:vim_tags_gems_tags_command
+                silent! exe '!' . g:vim_tags_gems_tags_command
             endif
         else
-            silent! exe g:vim_tags_gems_tags_command
+            silent! exe '!' . g:vim_tags_gems_tags_command
         endif
     endif
     if a:redraw
