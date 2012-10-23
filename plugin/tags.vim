@@ -14,13 +14,17 @@
 "
 " Usage:
 " https://github.com/szw/vim-tags/blob/master/README.md
-"
 
 if exists('g:loaded_vim_tags') || &cp || v:version < 700
     finish
 endif
 
 let g:loaded_vim_tags = 1
+
+"Auto generate ctags
+if !exists('g:vim_tags_auto_generate')
+    let g:vim_tags_auto_generate = 1
+endif
 
 "Main tags
 if !exists('g:vim_tags_project_tags_command')
@@ -31,6 +35,8 @@ endif
 if !exists('g:vim_tags_gems_tags_command')
     let g:vim_tags_gems_tags_command = "!ctags -R -f gems.tags `bundle show --paths` 2>/dev/null &"
 endif
+
+command! -nargs=0 TagsGenerate :call s:generate_tags()
 
 fun! s:generate_tags()
     silent! exe g:vim_tags_project_tags_command
@@ -48,11 +54,12 @@ fun! s:generate_tags()
     endif
 endfun
 
-"Auto generate ctags
 if filereadable('tags')
-    au BufWritePost * call s:generate_tags()
-
-    if filereadable('gems.tags')
-        set tags += "gems.tags"
+    if g:vim_tags_auto_generate
+        au BufWritePost * call s:generate_tags()
     endif
+endif
+
+if filereadable('gems.tags')
+    set tags += "gems.tags"
 endif
