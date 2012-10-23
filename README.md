@@ -1,4 +1,4 @@
 vim-tags
 ========
 
-Smart auto ctags generator
+CTags auto generator
