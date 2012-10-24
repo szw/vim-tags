@@ -49,6 +49,7 @@ fun! s:generate_tags(redraw)
             endif
         else
             silent! exe '!' . g:vim_tags_gems_tags_command
+            set tags+=gems.tags
         endif
     endif
     if a:redraw
