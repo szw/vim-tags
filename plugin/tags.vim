@@ -36,8 +36,6 @@ if !exists('g:vim_tags_gems_tags_command')
     let g:vim_tags_gems_tags_command = "ctags -R -f gems.tags `bundle show --paths` 2>/dev/null &"
 endif
 
-set tags+=gems.tags
-
 command! -nargs=0 TagsGenerate :call s:generate_tags(1)
 
 fun! s:generate_tags(redraw)
@@ -60,4 +58,8 @@ endfun
 
 if filereadable('tags') && g:vim_tags_auto_generate
     au BufWritePost * call s:generate_tags(0)
+endif
+
+if filereadable('gems.tags')
+    set tags+=gems.tags
 endif
