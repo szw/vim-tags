@@ -42,7 +42,7 @@ command! -nargs=0 TagsGenerate :call s:generate_tags(1)
 let s:options = []
 let s:custom_dirs = []
 
-for f in split(globpath('.', '*.tags'), '\n')
+for f in split(globpath('.', '*.tags', 1), '\n')
     let dir_name = f[:-6]
     let clean_name = substitute(dir_name, '^\./', '', '')
 
