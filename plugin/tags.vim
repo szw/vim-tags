@@ -39,7 +39,7 @@ endif
 command! -nargs=0 TagsGenerate :call s:generate_tags(1)
 
 " Generate options and custom dirs list
-let s:options = []
+let options = []
 let s:custom_dirs = []
 
 for f in split(globpath('.', '*.tags', 1), '\n')
@@ -47,14 +47,14 @@ for f in split(globpath('.', '*.tags', 1), '\n')
     let clean_name = substitute(dir_name, '^\./', '', '')
 
     if isdirectory(dir_name)
-        call add(s:options, '--exclude=' . shellescape(clean_name))
+        call add(options, '--exclude=' . shellescape(clean_name))
         call add(s:custom_dirs, dir_name)
     endif
 
     silent! exe 'set tags+=' . clean_name . '.tags'
 endfor
 
-let s:options = join(s:options, ' ')
+let s:options = join(options, ' ')
 
 fun! s:generate_tags(redraw)
     "Custom tags files
