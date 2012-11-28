@@ -54,6 +54,8 @@ for f in split(globpath('.', '*.tags', 1), '\n')
     silent! exe 'set tags+=' . clean_name . '.tags'
 endfor
 
+let s:options = join(s:options, ' ')
+
 fun! s:generate_tags(redraw)
     "Custom tags files
     for dir_name in s:custom_dirs
@@ -68,7 +70,7 @@ fun! s:generate_tags(redraw)
     endfor
 
     "Project tags file
-    let project_tags_command = substitute(g:vim_tags_project_tags_command, '{OPTIONS}', join(s:options, ' '), '')
+    let project_tags_command = substitute(g:vim_tags_project_tags_command, '{OPTIONS}', s:options, '')
     let project_tags_command = substitute(project_tags_command, '{DIRECTORY}', '', '')
     silent! exe '!' . project_tags_command
 
