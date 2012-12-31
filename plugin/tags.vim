@@ -1,4 +1,4 @@
-" vim-tags - The smart ctags genereator for Vim
+" vim-tags - The Ctags generator for Vim
 " Maintainer:   Szymon Wrozynski
 " Version:      0.0.2
 "

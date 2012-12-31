@@ -1,0 +1,135 @@
+*vim-tags.txt*           For Vim version 7.3           Last change: 2012-12-29
+*vim-tags*
+
+
+
+
+
+                            Vim-Tags version 0.0.2~
+
+                         The Ctags generator for Vim~
+
+
+
+
+
+Copyright (c) 2012 Szymon Wrozynski
+
+============================================================================
+Table of Contents
+
+    1. About..................................................|vim-tags-about|
+    2. Usage..................................................|vim-tags-usage|
+    3. Configuration..................................|vim-tags-configuration|
+    4. Author and License............................|vim-tags-author-license|
+
+----------------------------------------------------------------------------
+1. About                                                      *vim-tags-about*
+
+Ctags support is a great feature in Vim. One approach to make use of Ctags is
+the way of Tim Pope's plugins. For example in Rails projects, Ctags are
+generated automatically while Bundler is running and installing new gems.
+
+Vim-Tags plugin treats Ctags like more tightly coupled within a concrete
+project. It creates '.tags' files directly in the root project directory.
+Also, it can perform tags creation upon each file saving through forking -
+available under Unix-like operating systems. This option, however, may require
+some tweaking under Windows.
+
+Vim-Tags is under active development. Currently, besides its main features, it
+provides some support for Ruby/Rails projects (it can generate tags for gems
+listed in 'Gemfile.lock' file).
+
+----------------------------------------------------------------------------
+2. Usage                                                      *vim-tags-usage*
+
+The plugin has only one command and a few options described in the
+|vim-tags-configuration| section: >
+
+    :TagsGenerate
+<
+
+This command generates one or more tags files. By default, it generates only
+the "tags" file collecting tags from all files nad subdirectories of the
+current working directory - assuming it's the root of the project.
+
+By default, you rarely will have to use this command, because once the "tags"
+file is found in the root directory, the tags are generated on each file
+saving. So, in most cases, to enable Vim-Tags support just create empty "tags"
+file: >
+
+    touch tags
+
+<
+
+and start Vim. On first file saving (any file is considered), the tags will be
+generated.
+
+Additionally, you can exclude some directories from the main "tags" file,
+especially if they contains rarely changed and heavy content, i.e.
+third-party libraries. Those directories must be placed directly at the root.
+
+To exclude them, make empty files named exactly after those directories with
+".tags" suffixes: e.g. "vendor.tags" for the "vendor" directory and start (or
+restart) Vim. Beginning from the next Vim run, the plugin will be watching
+modification times of those directories and corresponding tags files and
+perform tags generation only if necessary.
+
+The last but not least feature is the Ruby Bundler support. It's easy and
+straightforward. If your project root contains "Gemfile.lock" file, the plugin
+will be generating tags for all your Bundler gems referenced in the Gemfile.
+Here, "Gemfile.lock" modification time will be taken to find out whether the
+tags generation is required, just like in the custom directories case
+explained earlier. The plugin will create "Gemfile.lock.tags" file
+automatically
+
+----------------------------------------------------------------------------
+3. Configuration                                      *vim-tags-configuration*
+
+Vim-Tags assumes that you have 'ctags' utility available in your shell.
+However it is possible to change or improve shell commands used by the plugin,
+e.g. in case you have to point a proper binary with absolute path or tweak
+some options.
+
+Vim-Tags can be configured by setting some global variables in your ".vimrc"
+file.
+
+The available variables are:
+
+                                                    *'vim_tags_auto_generate'*
+
+Default: 1
+
+If enabled, Vim-Tags will generate tags on file saving >
+
+    let g:vim_tags_auto_generate = 1
+
+<
+
+                                             *'vim_tags_project_tags_command'*
+
+Default: "ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null &"
+
+This command is used for main Ctags generation. >
+
+    let g:vim_tags_project_tags_command = "ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null &"
+
+<
+
+                                                *'vim_tags_gems_tags_command'*
+
+Default: "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
+
+Command used for Gemfile tags generation. >
+
+    let g:vim_tags_gems_tags_command = "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
+
+<
+
+----------------------------------------------------------------------------
+4. Author and License                                *vim-tags-author-license*
+
+Vim-Tags plugin was written by Szymon Wrozynski. It is licensed under the same
+terms as Vim itself. For more info see |license|.
+
+vim:tw=78:ts=4:ft=help:norl:
