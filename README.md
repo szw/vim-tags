@@ -1,7 +1,7 @@
 vim-tags
 ========
 
-Vim-Tags version 0.0.2
+Vim-Tags version 0.0.3
 ----------------------
 
 The Ctags generator for Vim
@@ -57,6 +57,12 @@ support just create empty "tags" file:
     touch tags
 
 and start Vim. On first file saving (any file is considered), the tags will be generated.
+
+The `:TagsGenerate` command has also a `bang` version:
+
+    :TagsGenerate!
+
+The `bang` version of the command forces generation for all "tags" files.
 
 Additionally, you can exclude some directories from the main "tags" file, especially if they
 contains rarely changed and heavy content, i.e.  third-party libraries. Those directories must be

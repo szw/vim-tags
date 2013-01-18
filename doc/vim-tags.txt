@@ -1,11 +1,11 @@
-*vim-tags.txt*           For Vim version 7.3           Last change: 2012-12-29
+*vim-tags.txt*           For Vim version 7.3           Last change: 2013-01-18
 *vim-tags*
 
 
 
 
 
-                            Vim-Tags version 0.0.2~
+                            Vim-Tags version 0.0.3~
 
                          The Ctags generator for Vim~
 
@@ -64,6 +64,14 @@ file: >
 
 and start Vim. On first file saving (any file is considered), the tags will be
 generated.
+
+The :TagsGenerate command has also a 'bang' version: >
+
+    :TagsGenerate!
+
+<
+
+The 'bang' version of the command forces generation of all 'tags' files.
 
 Additionally, you can exclude some directories from the main "tags" file,
 especially if they contains rarely changed and heavy content, i.e.

@@ -1,6 +1,6 @@
 " vim-tags - The Ctags generator for Vim
 " Maintainer:   Szymon Wrozynski
-" Version:      0.0.2
+" Version:      0.0.3
 "
 " Installation:
 " Place in ~/.vim/plugin/tags.vim or in case of Pathogen:
@@ -36,7 +36,7 @@ if !exists('g:vim_tags_gems_tags_command')
     let g:vim_tags_gems_tags_command = "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
 endif
 
-command! -nargs=0 TagsGenerate :call s:generate_tags(1)
+command! -bang -nargs=0 TagsGenerate :call s:generate_tags('<bang>', 1)
 
 " Generate options and custom dirs list
 let options = []
@@ -56,7 +56,14 @@ endfor
 
 let s:options = join(options, ' ')
 
-fun! s:generate_tags(redraw)
+fun! s:generate_tags(bang, redraw)
+    "Remove existing tags
+    if a:bang == '!'
+        for f in split(globpath('.', '*.tags', 1), '\n') + ['tags']
+            call writefile([], f, 'b')
+        endfor
+    endif
+
     "Custom tags files
     for dir_name in s:custom_dirs
         let file_name = dir_name . '.tags'
@@ -79,7 +86,7 @@ fun! s:generate_tags(redraw)
     if gemfile_time > -1
         let gems_time = getftime('Gemfile.lock.tags')
         if gems_time > -1
-            if gems_time < gemfile_time
+            if (gems_time < gemfile_time) || (getfsize('Gemfile.lock.tags') == 0)
                 silent! exe '!' . g:vim_tags_gems_tags_command
             endif
         else
@@ -94,5 +101,5 @@ fun! s:generate_tags(redraw)
 endfun
 
 if filereadable('tags') && g:vim_tags_auto_generate
-    au BufWritePost * call s:generate_tags(0)
+    au BufWritePost * call s:generate_tags('', 0)
 endif
