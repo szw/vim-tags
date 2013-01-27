@@ -36,7 +36,7 @@ if !exists('g:vim_tags_gems_tags_command')
     let g:vim_tags_gems_tags_command = "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
 endif
 
-command! -bang -nargs=0 TagsGenerate :call s:generate_tags('<bang>', 1)
+command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
 
 " Generate options and custom dirs list
 let options = []
@@ -58,7 +58,7 @@ let s:options = join(options, ' ')
 
 fun! s:generate_tags(bang, redraw)
     "Remove existing tags
-    if a:bang == '!'
+    if a:bang
         for f in split(globpath('.', '*.tags', 1), '\n') + ['tags']
             call writefile([], f, 'b')
         endfor
@@ -101,5 +101,5 @@ fun! s:generate_tags(bang, redraw)
 endfun
 
 if filereadable('tags') && g:vim_tags_auto_generate
-    au BufWritePost * call s:generate_tags('', 0)
+    au BufWritePost * call s:generate_tags(0, 0)
 endif
