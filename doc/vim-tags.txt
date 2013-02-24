@@ -1,11 +1,11 @@
-*vim-tags.txt*           For Vim version 7.3           Last change: 2013-01-18
+*vim-tags.txt*           For Vim version 7.3           Last change: 2013-02-24
 *vim-tags*
 
 
 
 
 
-                            Vim-Tags version 0.0.3~
+                            Vim-Tags version 0.0.4~
 
                          The Ctags generator for Vim~
 
@@ -31,7 +31,7 @@ the way of Tim Pope's plugins. For example in Rails projects, Ctags are
 generated automatically while Bundler is running and installing new gems.
 
 Vim-Tags plugin treats Ctags like more tightly coupled within a concrete
-project. It creates '.tags' files directly in the root project directory.
+project. It creates '*.tags' files directly in the root project directory.
 Also, it can perform tags creation upon each file saving through forking -
 available under Unix-like operating systems. This option, however, may require
 some tweaking under Windows.
@@ -82,6 +82,11 @@ To exclude them, make empty files named exactly after those directories with
 restart) Vim. Beginning from the next Vim run, the plugin will be watching
 modification times of those directories and corresponding tags files and
 perform tags generation only if necessary.
+
+Vim-Tags can read files containing patterns to exclude from tags generation.
+By default it seeks among '.gitignore', '.svnignore', and '.cvsignore' files
+in the current directory. You can change this behavior by setting proper
+configuration options explained later.
 
 The last but not least feature is the Ruby Bundler support. It's easy and
 straightforward. If your project root contains "Gemfile.lock" file, the plugin
@@ -134,10 +139,30 @@ Command used for Gemfile tags generation. >
 
 <
 
+                                                     *'vim_tags_ignore_files'*
+
+Default: ['.gitignore', '.svnignore', '.cvsignore']
+
+Files containing directories and files excluded from Ctags generation. >
+
+    let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore']
+
+<
+
+                                       *'vim_tags_ignore_file_comment_pattern'*
+
+Default: '^[#"]'
+
+The pattern used to recognize comments in the ignore file. >
+
+    let g:vim_tags_ignore_file_comment_prefix = '^[#"]'
+
+<
+
 ----------------------------------------------------------------------------
 4. Author and License                                *vim-tags-author-license*
 
-Vim-Tags plugin was written by Szymon Wrozynski. It is licensed under the same
-terms as Vim itself. For more info see |license|.
+Vim-Tags plugin was written by Szymon Wrozynski and Contributors. It is
+licensed under the same terms as Vim itself. For more info see |license|.
 
 vim:tw=78:ts=4:ft=help:norl:

@@ -1,6 +1,6 @@
 " vim-tags - The Ctags generator for Vim
 " Maintainer:   Szymon Wrozynski
-" Version:      0.0.3
+" Version:      0.0.4
 "
 " Installation:
 " Place in ~/.vim/plugin/tags.vim or in case of Pathogen:
@@ -21,19 +21,29 @@ endif
 
 let g:loaded_vim_tags = 1
 
-"Auto generate ctags
+" Auto generate ctags
 if !exists('g:vim_tags_auto_generate')
     let g:vim_tags_auto_generate = 1
 endif
 
-"Main tags
+" Main tags
 if !exists('g:vim_tags_project_tags_command')
     let g:vim_tags_project_tags_command = "ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null &"
 endif
 
-"Gemfile tags
+" Gemfile tags
 if !exists('g:vim_tags_gems_tags_command')
     let g:vim_tags_gems_tags_command = "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
+endif
+
+" Ignored files and directories list
+if !exists('g:vim_tags_ignore_files')
+    let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore']
+endif
+
+" The pattern used for comments in ignore file
+if !exists('g:vim_tags_ignore_file_comment_pattern')
+    let g:vim_tags_ignore_file_comment_pattern = '^[#"]'
 endif
 
 command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
@@ -41,6 +51,17 @@ command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
 " Generate options and custom dirs list
 let options = []
 let s:custom_dirs = []
+
+" Exclude ignored files and directories
+for ignore_file in g:vim_tags_ignore_files
+    if filereadable(ignore_file)
+        for line in readfile(ignore_file)
+            if strlen(line) > 1 && match(line, g:vim_tags_ignore_file_comment_pattern) == -1
+                call add(options, '--exclude=' . shellescape(substitute(line, '^/', '', '')))
+            endif
+        endfor
+    endif
+endfor
 
 for f in split(globpath('.', '*.tags', 1), '\n')
     let dir_name = f[:-6]
