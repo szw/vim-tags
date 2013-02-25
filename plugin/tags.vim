@@ -80,7 +80,7 @@ for ignore_file in g:vim_tags_ignore_files
 endfor
 
 " Add main tags file to tags option
-silent! exe 'set tags+=' . g:vim_tags_directory . '/' . g:vim_tags_main_file
+silent! exe 'set tags+=' . substitute(g:vim_tags_directory . '/' . g:vim_tags_main_file, '^\./', '', '')
 call add(options, '-f ' . g:vim_tags_directory . '/' . g:vim_tags_main_file)
 
 for f in split(globpath(g:vim_tags_directory, '*' . g:vim_tags_extension, 1), '\n')
@@ -91,7 +91,7 @@ for f in split(globpath(g:vim_tags_directory, '*' . g:vim_tags_extension, 1), '\
         call add(s:custom_dirs, dir_name)
     endif
 
-    silent! exe 'set tags+=' . f
+    silent! exe 'set tags+=' . substitute(f, '^\./', '', '')
 endfor
 
 let s:options = join(options, ' ')
@@ -133,7 +133,7 @@ fun! s:generate_tags(bang, redraw)
             endif
         else
             silent! exe '!' . gems_command
-            silent! exe 'set tags+=' . gems_path
+            silent! exe 'set tags+=' . substitute(gems_path, '^\./', '', '')
         endif
     endif
 
