@@ -1,6 +1,6 @@
 " vim-tags - The Ctags generator for Vim
 " Maintainer:   Szymon Wrozynski
-" Version:      0.0.4
+" Version:      0.0.5
 "
 " Installation:
 " Place in ~/.vim/plugin/tags.vim or in case of Pathogen:
@@ -9,11 +9,12 @@
 "     git clone https://github.com/szw/vim-tags.git
 "
 " License:
-" Copyright (c) 2012 Szymon Wrozynski. Distributed under the same terms as Vim itself.
+" Copyright (c) 2012-2013 Szymon Wrozynski and Contributors.
+" Distributed under the same terms as Vim itself.
 " See :help license
 "
 " Usage:
-" https://github.com/szw/vim-tags/blob/master/README.md
+" :help vim-tags
 
 if exists('g:loaded_vim_tags') || &cp || v:version < 700
     finish
@@ -33,7 +34,7 @@ endif
 
 " Gemfile tags
 if !exists('g:vim_tags_gems_tags_command')
-    let g:vim_tags_gems_tags_command = "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
+    let g:vim_tags_gems_tags_command = "ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null &"
 endif
 
 " Ignored files and directories list
@@ -46,10 +47,25 @@ if !exists('g:vim_tags_ignore_file_comment_pattern')
     let g:vim_tags_ignore_file_comment_pattern = '^[#"]'
 endif
 
+" A custom directory for tags files
+if !exists('g:vim_tags_directory')
+    let g:vim_tags_directory = '.'
+endif
+
+" The main tags file name
+if !exists('g:vim_tags_main_file')
+    let g:vim_tags_main_file = 'tags'
+endif
+
+" The extension used for additional tags files
+if !exists('g:vim_tags_extension')
+    let g:vim_tags_extension = '.tags'
+endif
+
 command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
 
 " Generate options and custom dirs list
-let options = []
+let options = ['--tag-relative']
 let s:custom_dirs = []
 
 " Exclude ignored files and directories
@@ -63,16 +79,19 @@ for ignore_file in g:vim_tags_ignore_files
     endif
 endfor
 
-for f in split(globpath('.', '*.tags', 1), '\n')
-    let dir_name = f[:-6]
-    let clean_name = substitute(dir_name, '^\./', '', '')
+" Add main tags file to tags option
+silent! exe 'set tags+=' . g:vim_tags_directory . '/' . g:vim_tags_main_file
+call add(options, '-f ' . g:vim_tags_directory . '/' . g:vim_tags_main_file)
+
+for f in split(globpath(g:vim_tags_directory, '*' . g:vim_tags_extension, 1), '\n')
+    let dir_name = f[strlen(g:vim_tags_directory) + 1:-6]
 
     if isdirectory(dir_name)
-        call add(options, '--exclude=' . shellescape(clean_name))
+        call add(options, '--exclude=' . shellescape(dir_name))
         call add(s:custom_dirs, dir_name)
     endif
 
-    silent! exe 'set tags+=' . clean_name . '.tags'
+    silent! exe 'set tags+=' . f
 endfor
 
 let s:options = join(options, ' ')
@@ -80,14 +99,14 @@ let s:options = join(options, ' ')
 fun! s:generate_tags(bang, redraw)
     "Remove existing tags
     if a:bang
-        for f in split(globpath('.', '*.tags', 1), '\n') + ['tags']
+        for f in split(globpath(g:vim_tags_directory, '*' . g:vim_tags_extension, 1), '\n') + [g:vim_tags_directory . '/' . g:vim_tags_main_file]
             call writefile([], f, 'b')
         endfor
     endif
 
     "Custom tags files
     for dir_name in s:custom_dirs
-        let file_name = dir_name . '.tags'
+        let file_name = g:vim_tags_directory . '/' . dir_name . g:vim_tags_extension
         let dir_time = getftime(dir_name)
 
         if (getftime(file_name) < dir_time) || (getfsize(file_name) == 0)
@@ -99,20 +118,22 @@ fun! s:generate_tags(bang, redraw)
 
     "Project tags file
     let project_tags_command = substitute(g:vim_tags_project_tags_command, '{OPTIONS}', s:options, '')
-    let project_tags_command = substitute(project_tags_command, '{DIRECTORY}', '', '')
+    let project_tags_command = substitute(project_tags_command, '{DIRECTORY}', '.', '')
     silent! exe '!' . project_tags_command
 
     "Gemfile.lock
     let gemfile_time = getftime('Gemfile.lock')
     if gemfile_time > -1
-        let gems_time = getftime('Gemfile.lock.tags')
+        let gems_path = g:vim_tags_directory . '/Gemfile.lock' . g:vim_tags_extension
+        let gems_command = substitute(g:vim_tags_gems_tags_command, '{OPTIONS}', '-f ' . gems_path, '')
+        let gems_time = getftime(gems_path)
         if gems_time > -1
-            if (gems_time < gemfile_time) || (getfsize('Gemfile.lock.tags') == 0)
-                silent! exe '!' . g:vim_tags_gems_tags_command
+            if (gems_time < gemfile_time) || (getfsize(gems_path) == 0)
+                silent! exe '!' . gems_command
             endif
         else
-            silent! exe '!' . g:vim_tags_gems_tags_command
-            set tags+=Gemfile.lock.tags
+            silent! exe '!' . gems_command
+            silent! exe 'set tags+=' . gems_path
         endif
     endif
 
@@ -121,6 +142,6 @@ fun! s:generate_tags(bang, redraw)
     endif
 endfun
 
-if filereadable('tags') && g:vim_tags_auto_generate
+if filereadable(g:vim_tags_directory . '/' . g:vim_tags_main_file) && g:vim_tags_auto_generate
     au BufWritePost * call s:generate_tags(0, 0)
 endif

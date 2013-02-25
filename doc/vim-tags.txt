@@ -1,11 +1,11 @@
-*vim-tags.txt*           For Vim version 7.3           Last change: 2013-02-24
+*vim-tags.txt*           For Vim version 7.3           Last change: 2013-02-25
 *vim-tags*
 
 
 
 
 
-                            Vim-Tags version 0.0.4~
+                            Vim-Tags version 0.0.5~
 
                          The Ctags generator for Vim~
 
@@ -13,7 +13,7 @@
 
 
 
-Copyright (c) 2012 Szymon Wrozynski
+Copyright (c) 2012-2013 Szymon Wrozynski and Contributors
 
 ============================================================================
 Table of Contents
@@ -104,10 +104,20 @@ However it is possible to change or improve shell commands used by the plugin,
 e.g. in case you have to point a proper binary with absolute path or tweak
 some options.
 
-Vim-Tags can be configured by setting some global variables in your ".vimrc"
-file.
+Vim-Tags can be configured by setting some global variables in your '.vimrc'
+file. If you want to have some custom settings valid only for the current
+project create a local '.vimrc' file with those settings and add the following
+snippet to your main '.vimrc' file: >
 
-The available variables are:
+    set exrc
+    set secure
+
+<
+
+This will allow Vim to use your custom .vimrc in the current working
+directory.
+
+The Vim-Tags available variables are:
 
                                                     *'vim_tags_auto_generate'*
 
@@ -156,6 +166,38 @@ Default: '^[#"]'
 The pattern used to recognize comments in the ignore file. >
 
     let g:vim_tags_ignore_file_comment_prefix = '^[#"]'
+
+<
+
+
+                                                         *'vim_tags_directory'*
+
+Default: '.'
+
+The default directory where the tags files will be created. >
+
+    let g:vim_tags_directory = '.'
+
+<
+
+
+                                                         *'vim_tags_main_file'*
+
+Default: 'tags'
+
+The main tags file name. >
+
+    let g:vim_tags_main_file = 'tags'
+
+<
+
+                                                         *'vim_tags_extension'*
+
+Default: '.tags'
+
+The extension used for additional tags files. >
+
+    let g:vim_tags_extension = '.tags'
 
 <
 
