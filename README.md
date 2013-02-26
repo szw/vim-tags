@@ -106,7 +106,7 @@ The Vim-Tags available variables are:
 
 * `vim_tags_auto_generate`
 
-    * Default: 1
+    * Default: `1`
 
     If enabled, Vim-Tags will generate tags on file saving
 
@@ -117,7 +117,7 @@ The Vim-Tags available variables are:
 
 * `vim_tags_project_tags_command`
 
-    * Default: "ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null &"
+    * Default: `"ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null &"`
 
     This command is used for main Ctags generation.
 
@@ -128,18 +128,18 @@ The Vim-Tags available variables are:
 
 * `vim_tags_gems_tags_command`
 
-    * Default: "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
+    * Default: ``"ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null &"``
 
     Command used for Gemfile tags generation.
 
-        let g:vim_tags_gems_tags_command = "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
+        let g:vim_tags_gems_tags_command = "ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null &"
 
 
 
 
 * `vim_tags_ignore_files`
 
-    * Default: ['.gitignore', '.svnignore', '.cvsignore']
+    * Default: `['.gitignore', '.svnignore', '.cvsignore']`
 
     Files containing directories and files excluded from Ctags generation.
 
@@ -150,7 +150,7 @@ The Vim-Tags available variables are:
 
 * `vim_tags_ignore_file_comment_pattern`
 
-    * Default: '^[#"]'
+    * Default: `'^[#"]'`
 
     The pattern used to recognize comments in the ignore file.
 
@@ -161,7 +161,7 @@ The Vim-Tags available variables are:
 
 * `vim_tags_directory`
 
-    * Default: '.'
+    * Default: `'.'`
 
     The default directory where the tags files will be created.
 
@@ -172,7 +172,7 @@ The Vim-Tags available variables are:
 
 * `vim_tags_main_file`
 
-    * Default: 'tags'
+    * Default: `'tags'`
 
     The main tags file name.
 
@@ -183,7 +183,7 @@ The Vim-Tags available variables are:
 
 * `vim_tags_extension`
 
-    * Default: '.tags'
+    * Default: `'.tags'`
 
     The extension used for additional tags files.
 

@@ -141,11 +141,11 @@ This command is used for main Ctags generation. >
 
                                                 *'vim_tags_gems_tags_command'*
 
-Default: "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
+Default: "ctags -R -f {OPTIONS} `bundle show --paths` 2>/dev/null &"
 
 Command used for Gemfile tags generation. >
 
-    let g:vim_tags_gems_tags_command = "ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null &"
+    let g:vim_tags_gems_tags_command = "ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null &"
 
 <
 
