@@ -26,7 +26,7 @@ Table of Contents
 ----------------------------------------------------------------------------
 1. About                                                      *vim-tags-about*
 
-Ctags support is a great feature in Vim. One approach to make use of Ctags is
+Ctags support is a great feature of Vim. One approach to make use of Ctags is
 the way of Tim Pope's plugins. For example in Rails projects, Ctags are
 generated automatically while Bundler is running and installing new gems.
 
