@@ -1,7 +1,7 @@
 vim-tags
 ========
 
-Vim-Tags version 0.0.5
+Vim-Tags version 0.0.6
 ----------------------
 
 The Ctags generator for Vim
@@ -159,13 +159,14 @@ The Vim-Tags available variables are:
 
 
 
-* `vim_tags_directory`
+* `vim_tags_directories`
 
-    * Default: `'.'`
+    * Default: `['.git', '.svn', 'CVS']`
 
-    The default directory where the tags files will be created.
+    The default directories list where the tags files will be created. The first one found will be
+    used. If none exists the current directory (`'.'`) will be taken.
 
-        let g:vim_tags_directory = '.'
+        let g:vim_tags_directories = ['.git', '.svn', 'CVS']
 
 
 
