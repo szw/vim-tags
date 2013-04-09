@@ -114,7 +114,7 @@ endfor
 let s:options = join(options, ' ')
 
 fun! s:execute_async_command(command)
-    if g:vim_tags_use_vim_dispatch && g:loaded_dispatch
+    if g:vim_tags_use_vim_dispatch && exists('g:loaded_dispatch')
         silent! exe 'Start!' a:command
     else
         silent! exe '!' . a:command '&'
