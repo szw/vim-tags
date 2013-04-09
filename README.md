@@ -1,7 +1,7 @@
 vim-tags
 ========
 
-Vim-Tags version 0.0.6
+Vim-Tags version 0.0.7
 ----------------------
 
 The Ctags generator for Vim
@@ -117,22 +117,35 @@ The Vim-Tags available variables are:
 
 * `vim_tags_project_tags_command`
 
-    * Default: `"ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null &"`
+    * Default: `"ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"`
 
     This command is used for main Ctags generation.
 
-        let g:vim_tags_project_tags_command = "ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null &"
+        let g:vim_tags_project_tags_command = "ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
 
 
 
 
 * `vim_tags_gems_tags_command`
 
-    * Default: ``"ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null &"``
+    * Default: ``"ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"``
 
     Command used for Gemfile tags generation.
 
-        let g:vim_tags_gems_tags_command = "ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null &"
+        let g:vim_tags_gems_tags_command = "ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"
+
+
+
+
+* `vim_tags_use_vim_dispatch`
+
+    * Default: `1`
+
+    [`Vim-Dispatch`](https://github.com/tpope/vim-dispatch) is a plugin allowing asynchronous calls of
+    system commands. `Vim-Tags` will try to use it (if found) to perform asynchronous tags generation.
+    Otherwise `Vim-Tags` will make asynchronous calls by adding `&` to ctags commands.
+
+        let g:vim_tags_use_vim_dispatch = 1
 
 
 

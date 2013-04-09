@@ -1,6 +1,6 @@
 " vim-tags - The Ctags generator for Vim
 " Maintainer:   Szymon Wrozynski
-" Version:      0.0.6
+" Version:      0.0.7
 "
 " Installation:
 " Place in ~/.vim/plugin/tags.vim or in case of Pathogen:
@@ -29,12 +29,12 @@ endif
 
 " Main tags
 if !exists('g:vim_tags_project_tags_command')
-    let g:vim_tags_project_tags_command = "ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null &"
+    let g:vim_tags_project_tags_command = "ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
 endif
 
 " Gemfile tags
 if !exists('g:vim_tags_gems_tags_command')
-    let g:vim_tags_gems_tags_command = "ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null &"
+    let g:vim_tags_gems_tags_command = "ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"
 endif
 
 " Ignored files and directories list
@@ -60,6 +60,11 @@ endif
 " The extension used for additional tags files
 if !exists('g:vim_tags_extension')
     let g:vim_tags_extension = '.tags'
+endif
+
+" Should be the Vim-Dispatch plugin used for asynchronous tags generating if present?
+if !exists('g:vim_tags_use_vim_dispatch')
+    let g:vim_tags_use_vim_dispatch = 1
 endif
 
 command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
@@ -108,6 +113,14 @@ endfor
 
 let s:options = join(options, ' ')
 
+fun! s:execute_async_command(command)
+    if g:vim_tags_use_vim_dispatch && g:loaded_dispatch
+        silent! exe 'Start!' a:command
+    else
+        silent! exe '!' . a:command '&'
+    endif
+endfun
+
 fun! s:generate_tags(bang, redraw)
     "Remove existing tags
     if a:bang
@@ -124,14 +137,14 @@ fun! s:generate_tags(bang, redraw)
         if (getftime(file_name) < dir_time) || (getfsize(file_name) == 0)
             let custom_tags_command = substitute(g:vim_tags_project_tags_command, '{DIRECTORY}', shellescape(dir_name), '')
             let custom_tags_command = substitute(custom_tags_command, '{OPTIONS}', '-f ' . shellescape(file_name), '')
-            silent! exe '!' . custom_tags_command
+            call s:execute_async_command(custom_tags_command)
         endif
     endfor
 
     "Project tags file
     let project_tags_command = substitute(g:vim_tags_project_tags_command, '{OPTIONS}', s:options, '')
     let project_tags_command = substitute(project_tags_command, '{DIRECTORY}', '.', '')
-    silent! exe '!' . project_tags_command
+    call s:execute_async_command(project_tags_command)
 
     "Gemfile.lock
     let gemfile_time = getftime('Gemfile.lock')
@@ -141,10 +154,10 @@ fun! s:generate_tags(bang, redraw)
         let gems_time = getftime(gems_path)
         if gems_time > -1
             if (gems_time < gemfile_time) || (getfsize(gems_path) == 0)
-                silent! exe '!' . gems_command
+                call s:execute_async_command(gems_command)
             endif
         else
-            silent! exe '!' . gems_command
+            call s:execute_async_command(gems_command)
             silent! exe 'set tags+=' . substitute(gems_path, '^\./', '', '')
         endif
     endif
