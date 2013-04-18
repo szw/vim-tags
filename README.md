@@ -37,6 +37,9 @@ Vim-Tags requires `ctags` utility. On Ubuntu you can install it with:
 
     sudo apt-get install exuberant-ctags
 
+Please, don't forget to star the repository if you like (and use) the plugin. This will let me know
+how many users it has and then how to proceed with further development :).
+
 
 Usage
 -----
