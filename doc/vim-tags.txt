@@ -50,7 +50,7 @@ The plugin has only one command and a few options described in the
 <
 
 This command generates one or more tags files. By default, it generates only
-the "tags" file collecting tags from all files nad subdirectories of the
+the "tags" file collecting tags from all files and subdirectories of the
 current working directory - assuming it's the root of the project.
 
 By default, you rarely will have to use this command, because once the "tags"
