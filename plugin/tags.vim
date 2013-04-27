@@ -1,6 +1,6 @@
 " vim-tags - The Ctags generator for Vim
 " Maintainer:   Szymon Wrozynski
-" Version:      0.0.7
+" Version:      0.0.8
 "
 " Installation:
 " Place in ~/.vim/plugin/tags.vim or in case of Pathogen:
@@ -73,11 +73,15 @@ command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
 let options = ['--tag-relative']
 let s:custom_dirs = []
 
-" Exclude ignored files and directories
+let s:files_to_include = []
+
+" Exclude ignored files and directories (also handle negated patterns (!))
 for ignore_file in g:vim_tags_ignore_files
     if filereadable(ignore_file)
         for line in readfile(ignore_file)
-            if strlen(line) > 1 && match(line, g:vim_tags_ignore_file_comment_pattern) == -1
+            if match(line, '^!') != -1
+                call add(s:files_to_include, substitute(substitute(line, '^!', '', ''), '^/', '', ''))
+            elseif strlen(line) > 1 && match(line, g:vim_tags_ignore_file_comment_pattern) == -1
                 call add(options, '--exclude=' . shellescape(substitute(line, '^/', '', '')))
             endif
         endfor
@@ -145,6 +149,14 @@ fun! s:generate_tags(bang, redraw)
     let project_tags_command = substitute(g:vim_tags_project_tags_command, '{OPTIONS}', s:options, '')
     let project_tags_command = substitute(project_tags_command, '{DIRECTORY}', '.', '')
     call s:execute_async_command(project_tags_command)
+
+    " Append files from negated patterns
+    if !empty(s:files_to_include)
+        let append_command_template = substitute(g:vim_tags_project_tags_command, '{OPTIONS}', '--tag-relative -a -f ' . s:tags_directory . '/' . g:vim_tags_main_file, '')
+        for file_to_include in s:files_to_include
+            call s:execute_async_command(substitute(append_command_template, '{DIRECTORY}', file_to_include, ''))
+        endfor
+    endif
 
     "Gemfile.lock
     let gemfile_time = getftime('Gemfile.lock')

@@ -1,11 +1,11 @@
-*vim-tags.txt*           For Vim version 7.3           Last change: 2013-04-09
+*vim-tags.txt*           For Vim version 7.3           Last change: 2013-04-28
 *vim-tags*
 
 
 
 
 
-                            Vim-Tags version 0.0.7~
+                            Vim-Tags version 0.0.8~
 
                          The Ctags generator for Vim~
 
