@@ -1,7 +1,7 @@
 vim-tags
 ========
 
-Vim-Tags version 0.0.7
+Vim-Tags version 0.0.8
 ----------------------
 
 The Ctags generator for Vim
