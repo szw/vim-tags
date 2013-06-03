@@ -1,7 +1,7 @@
 vim-tags
 ========
 
-Vim-Tags version 0.0.8
+Vim-Tags version 0.0.9
 ----------------------
 
 The Ctags generator for Vim
@@ -149,6 +149,19 @@ The Vim-Tags available variables are:
     Otherwise `Vim-Tags` will make asynchronous calls by adding `&` to ctags commands.
 
         let g:vim_tags_use_vim_dispatch = 1
+
+
+
+
+* `vim_tags_use_ycm`
+
+    * Default: `1`
+
+    Use `ctags` with `--field=+l` option necessary for the tag completion in the
+    [`YouCompleteMe`](https://github.com/Valloric/YouCompleteMe) plugin, if the YCM's tag completion
+    presence is detected.
+
+        let g:vim_tags_use_ycm = 1
 
 
 

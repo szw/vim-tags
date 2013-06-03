@@ -1,6 +1,6 @@
 " vim-tags - The Ctags generator for Vim
 " Maintainer:   Szymon Wrozynski
-" Version:      0.0.8
+" Version:      0.0.9
 "
 " Installation:
 " Place in ~/.vim/plugin/tags.vim or in case of Pathogen:
@@ -67,6 +67,11 @@ if !exists('g:vim_tags_use_vim_dispatch')
     let g:vim_tags_use_vim_dispatch = 1
 endif
 
+" Should the --field+=l option be used if YouCompleteMe tag completion is detected?
+if !exists('g:vim_tags_use_ycm')
+    let g:vim_tags_use_ycm = 1
+endif
+
 command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
 
 " Generate options and custom dirs list
@@ -98,6 +103,12 @@ endfor
 
 if !exists('s:tags_directory')
     let s:tags_directory = '.'
+endif
+
+" Add the support for YouCompleteMe (add --fields=+l)
+if g:vim_tags_use_ycm && exists("g:ycm_collect_identifiers_from_tags_files") && g:ycm_collect_identifiers_from_tags_files
+  let g:vim_tags_project_tags_command = substitute(g:vim_tags_project_tags_command, "{OPTIONS}", '--fields=+l {OPTIONS}', "")
+  let g:vim_tags_gems_tags_command = substitute(g:vim_tags_gems_tags_command, "{OPTIONS}", '--fields=+l {OPTIONS}', "")
 endif
 
 " Add main tags file to tags option
@@ -140,7 +151,7 @@ fun! s:generate_tags(bang, redraw)
 
         if (getftime(file_name) < dir_time) || (getfsize(file_name) == 0)
             let custom_tags_command = substitute(g:vim_tags_project_tags_command, '{DIRECTORY}', shellescape(dir_name), '')
-            let custom_tags_command = substitute(custom_tags_command, '{OPTIONS}', '-f ' . shellescape(file_name), '')
+            let custom_tags_command = substitute(custom_tags_command, '{OPTIONS}', '--tag-relative -f ' . shellescape(file_name), '')
             call s:execute_async_command(custom_tags_command)
         endif
     endfor
