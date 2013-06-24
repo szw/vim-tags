@@ -67,9 +67,9 @@ if !exists('g:vim_tags_use_vim_dispatch')
     let g:vim_tags_use_vim_dispatch = 1
 endif
 
-" Should the --field+=l option be used if YouCompleteMe tag completion is detected?
-if !exists('g:vim_tags_use_ycm')
-    let g:vim_tags_use_ycm = 1
+" Should the --field+=l option be used
+if !exists('g:vim_tags_use_language_field')
+    let g:vim_tags_use_language_field = 1
 endif
 
 command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
@@ -105,8 +105,8 @@ if !exists('s:tags_directory')
     let s:tags_directory = '.'
 endif
 
-" Add the support for YouCompleteMe (add --fields=+l)
-if g:vim_tags_use_ycm && exists("g:ycm_collect_identifiers_from_tags_files") && g:ycm_collect_identifiers_from_tags_files
+" Add the support for completion plugins (like YouCompleteMe or WiseComplete) (add --fields=+l)
+if g:vim_tags_use_language_field
   let g:vim_tags_project_tags_command = substitute(g:vim_tags_project_tags_command, "{OPTIONS}", '--fields=+l {OPTIONS}', "")
   let g:vim_tags_gems_tags_command = substitute(g:vim_tags_gems_tags_command, "{OPTIONS}", '--fields=+l {OPTIONS}', "")
 endif
