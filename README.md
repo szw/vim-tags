@@ -37,9 +37,26 @@ Vim-Tags requires `ctags` utility. On Ubuntu you can install it with:
 
     sudo apt-get install exuberant-ctags
 
-Please, don't forget to star the repository if you like (and use) the plugin. This will let me know
+On OSX:
+
+    brew install ctags
+
+Please, don't forget to star :star: the repository if you like (and use) the plugin. This will let me know
 how many users it has and then how to proceed with further development :).
 
+Ruby Manager
+-----
+
+If you are using a Ruby Manager such as [chruby](https://github.com/postmodern/chruby), [rvm](http://rvm.beginrescueend.com/), [rbenv](https://github.com/sstephenson/rbenv) etc, be sure to have your Ruby Manager integrated with Vim.
+
+* [Integrating chruby with Vim](https://github.com/postmodern/chruby/wiki/Vim)
+* [Integrating rvm with Vim](http://rvm.io/integration/vim)
+
+A simple way to check this is by executing `bundle show --paths` in your Vim in the command-line mode.
+
+    :!bundle show --paths
+
+If it shows your current Gems (based on your Gemfile) it is probably working fine.
 
 Usage
 -----
@@ -87,7 +104,6 @@ whether the tags generation is required, just like in the custom directories cas
 The plugin will create "Gemfile.lock.tags" file automatically
 
 
-<div id="configuration"></div>
 Configuration
 -------------
 
