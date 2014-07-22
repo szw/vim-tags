@@ -88,8 +88,6 @@ endif
 
 command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
 
-let s:default_tags = &tags
-
 function! s:generate_options()
   let options = ['--tag-relative']
 
@@ -123,7 +121,6 @@ function! s:generate_options()
   endif
 
   " Add main tags file to tags option
-  silent! exe "set tags=" . s:default_tags
   silent! exe 'set tags+=' . substitute(s:tags_directory . '/' . g:vim_tags_main_file, '^\./', '', '')
   call add(options, '-f ' . s:tags_directory . '/' . g:vim_tags_main_file)
 
