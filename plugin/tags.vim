@@ -9,7 +9,7 @@
 "     git clone https://github.com/szw/vim-tags.git
 "
 " License:
-" Copyright (c) 2012-2013 Szymon Wrozynski and Contributors.
+" Copyright (c) 2012-2014 Szymon Wrozynski and Contributors.
 " Distributed under the same terms as Vim itself.
 " See :help license
 "
@@ -29,10 +29,6 @@ endif
 
 if !exists("g:vim_tags_ctags_binary")
   let g:vim_tags_ctags_binary = "ctags"
-endif
-
-if !exists("g:vim_tags_project_root_markers")
-  let g:vim_tags_project_root_markers = [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]
 endif
 
 " Main tags
@@ -57,7 +53,7 @@ endif
 
 " A list of directories used as a place for tags.
 if !exists('g:vim_tags_directories')
-  let g:vim_tags_directories = ['.git', '.svn', 'CVS']
+  let g:vim_tags_directories = [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]
 endif
 
 " The main tags file name
@@ -72,12 +68,16 @@ endif
 
 " Should be the Vim-Dispatch plugin used for asynchronous tags generating if present?
 if !exists('g:vim_tags_use_vim_dispatch')
-  let g:vim_tags_use_vim_dispatch = 1
+  let g:vim_tags_use_vim_dispatch = 0
 endif
 
 " Should the --field+=l option be used
 if !exists('g:vim_tags_use_language_field')
   let g:vim_tags_use_language_field = 1
+endif
+
+if !exists("g:vim_tags_cache_dir")
+  let g:vim_tags_cache_dir = expand($HOME)
 endif
 
 " Add the support for completion plugins (like YouCompleteMe or WiseComplete) (add --fields=+l)
@@ -87,6 +87,41 @@ if g:vim_tags_use_language_field
 endif
 
 command! -bang -nargs=0 TagsGenerate :call s:generate_tags(<bang>0, 1)
+
+let s:locations = {}
+let s:dirty_locations = 0
+
+function! s:load_tags_locations()
+  let cache_file  = g:vim_tags_cache_dir . "/.vt_locations"
+
+  if filereadable(cache_file)
+    for line in readfile(cache_file)
+      let s:locations[line] = 1
+      silent! exe 'set tags+=' . line
+    endfor
+  endif
+endfunction
+
+call s:load_tags_locations()
+
+function! s:save_tags_locations()
+  let cache_file = g:vim_tags_cache_dir . "/.vt_locations"
+  call s:load_tags_locations()
+  call writefile(keys(s:locations), cache_file)
+  let s:dirty_locations = 0
+endfunction
+
+function s:add_tags_location(location)
+  let location = substitute(a:location, '^\./', '', '')
+
+  if exists("s:locations[location]")
+    return
+  endif
+
+  silent! exe 'set tags+=' . location
+  let s:locations[location] = 1
+  let s:dirty_locations = 1
+endfunction
 
 function! s:generate_options()
   let options = ['--tag-relative']
@@ -121,7 +156,8 @@ function! s:generate_options()
   endif
 
   " Add main tags file to tags option
-  silent! exe 'set tags+=' . substitute(s:tags_directory . '/' . g:vim_tags_main_file, '^\./', '', '')
+  call s:add_tags_location(s:tags_directory . '/' . g:vim_tags_main_file)
+
   call add(options, '-f ' . s:tags_directory . '/' . g:vim_tags_main_file)
 
   for f in split(globpath(s:tags_directory, '*' . g:vim_tags_extension, 1), '\n')
@@ -132,7 +168,7 @@ function! s:generate_options()
       call add(s:custom_dirs, dir_name)
     endif
 
-    silent! exe 'set tags+=' . substitute(f, '^\./', '', '')
+    call s:add_tags_location(f)
   endfor
 
   return join(options, ' ')
@@ -141,16 +177,16 @@ endfunction
 function! s:find_project_root()
   let project_root = fnamemodify(".", ":p:h")
 
-  if !empty(g:vim_tags_project_root_markers)
+  if !empty(g:vim_tags_directories)
     let root_found = 0
 
     let candidate = fnamemodify(project_root, ":p:h")
     let last_candidate = ""
 
     while candidate != last_candidate
-      for marker in g:vim_tags_project_root_markers
-        let marker_path = candidate . "/" . marker
-        if filereadable(marker_path) || isdirectory(marker_path)
+      for tags_dir in g:vim_tags_directories
+        let tags_dir_path = candidate . "/" . tags_dir
+        if filereadable(tags_dir_path) || isdirectory(tags_dir_path)
           let root_found = 1
           break
         endif
@@ -200,6 +236,10 @@ fun! s:generate_tags(bang, redraw)
   endif
 
   if !filereadable(s:tags_directory . '/' . g:vim_tags_main_file)
+    if s:dirty_locations
+      call s:save_tags_locations()
+    endif
+
     silent! exe "cd " . old_cwd
 
     if handle_acd
@@ -242,7 +282,7 @@ fun! s:generate_tags(bang, redraw)
     let gems_command = substitute(g:vim_tags_gems_tags_command, '{OPTIONS}', '-f ' . gems_path, '')
     let gems_time = getftime(gems_path)
 
-    silent! exe 'set tags+=' . substitute(gems_path, '^\./', '', '')
+    call s:add_tags_location(gems_path)
 
     if gems_time > -1
       if (gems_time < gemfile_time) || (getfsize(gems_path) == 0)
@@ -255,6 +295,10 @@ fun! s:generate_tags(bang, redraw)
 
   if a:redraw
     redraw!
+  endif
+
+  if s:dirty_locations
+    call s:save_tags_locations()
   endif
 
   silent! exe "cd " . old_cwd

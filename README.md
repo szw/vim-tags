@@ -1,28 +1,30 @@
-vim-tags
+Vim-Tags
 ========
 
-Vim-Tags version 0.0.9
+Vim-Tags version 0.1.0
 ----------------------
 
 The Ctags generator for Vim
 
-Copyright (c) 2012-2013 Szymon Wrozynski and Contributors
+Copyright (c) 2012-2014 Szymon Wrozynski and Contributors
 
 
 About
 -----
 
-Ctags support is a great feature of Vim. One approach to make use of Ctags is the way of Tim Pope's
-plugins. For example in Rails projects, Ctags are generated automatically while Bundler is running
-and installing new gems.
+Ctags support is a great feature of Vim. One approach to make use of Ctags is
+the way of Tim Pope's plugins. For example in Rails projects, Ctags are
+generated automatically while Bundler is running and installing new gems.
 
-Vim-Tags plugin treats Ctags like more tightly coupled within a concrete project. It creates '.tags'
-files directly in the root project directory. Also, it can perform tags creation upon each file
-saving through forking - available under Unix-like operating systems. This option, however, may
-require some tweaking under Windows.
+Vim-Tags plugin treats Ctags like more tightly coupled within a concrete
+project. It creates '.tags' files directly in the root project directory. Also,
+it can perform tags creation upon each file saving through forking - available
+under Unix-like operating systems. This option, however, may require some
+tweaking under Windows.
 
-Vim-Tags is under active development. Currently, besides its main features, it provides some support
-for Ruby/Rails projects (it can generate tags for gems listed in 'Gemfile.lock' file).
+Vim-Tags is under active development. Currently, besides its main features, it
+provides some support for Ruby/Rails projects (it can generate tags for gems
+listed in 'Gemfile.lock' file).
 
 
 Installation
@@ -37,67 +39,76 @@ Vim-Tags requires `ctags` utility. On Ubuntu you can install it with:
 
     sudo apt-get install exuberant-ctags
 
-Please, don't forget to star the repository if you like (and use) the plugin. This will let me know
-how many users it has and then how to proceed with further development :).
+On Mac OSX you could use Homebrew:
+
+    brew install ctags
+
+Please, don't forget to star the repository if you like (and use) the plugin.
+This will let me know how many users it has and then how to proceed with further
+development :).
 
 
 Usage
 -----
 
-The plugin has only one command and a few options described in the [Configuration](#configuration)
-section:
+The plugin has only one command and a few options described in the
+[Configuration](#configuration) section:
 
     :TagsGenerate
 
-This command generates one or more tags files. By default, it generates only the "tags" file
-collecting tags from all files and subdirectories of the current working directory - assuming it's
-the root of the project.
+This command will generate one or more tags files but only if the main tags file
+exist. The presence of that file acts as an indicator actually. By default, the
+command generates only the "tags" file collecting tags from all files and
+subdirectories of the project root directory.
 
-By default, you rarely will have to use this command, because once the "tags" file is found in the
-root directory, the tags are generated on each file saving. So, in most cases, to enable Vim-Tags
-support just create empty "tags" file:
+Moreover, this command will also update the `tags` setting of Vim with all new
+tags files found in the project root. By default, this command is also executed
+autmatically upon each file save. 
 
-    touch tags
+Vim-Tags caches relative tags paths and updates `tags` settings automatically.
 
-and start Vim. On first file saving (any file is considered), the tags will be generated.
-
-The `:TagsGenerate` command has also a `bang` version:
+For the first time, when there are no `tags` files in you project yet, you can
+force generating them by the `bang` version of the `:TagsGenerate` command:
 
     :TagsGenerate!
 
 The `bang` version of the command forces generation for all "tags" files.
 
-Additionally, you can exclude some directories from the main "tags" file, especially if they
-contains rarely changed and heavy content, i.e. third-party libraries. Those directories must be
-placed directly at the root.
+Additionally, you can exclude some directories from the main "tags" file,
+especially if they contains rarely changed and heavy content, i.e. third-party
+libraries. Those directories must be placed directly at the project root.
 
-To exclude them, make empty files named exactly after those directories with ".tags" suffixes: e.g.
-"vendor.tags" for the "vendor" directory and start (or restart) Vim. Beginning from the next Vim
-run, the plugin will be watching modification times of those directories and corresponding tags
-files and perform tags generation only if necessary.
+To exclude them, make empty files named exactly after those directories with
+".tags" suffixes: e.g. "vendor.tags" for the "vendor" directory and start (or
+restart) Vim. Beginning from the next Vim run, the plugin will be watching
+modification times of those directories and corresponding tags files and perform
+tags generation only if necessary.
 
-Vim-Tags can read files containing patterns to exclude from tags generation. By default it seeks
-among '.gitignore', '.svnignore', and '.cvsignore' files in the current directory. You can change
-this behavior by setting proper configuration options explained later.
+Vim-Tags can read files containing patterns to exclude from tags generation. By
+default it seeks among '.gitignore', '.svnignore', and '.cvsignore' files in the
+current directory. You can change this behavior by setting proper configuration
+options explained later.
 
-The last but not least feature is the Ruby Bundler support. It's easy and straightforward. If your
-project root contains "Gemfile.lock" file, the plugin will be generating tags for all your Bundler
-gems referenced in the Gemfile. Here, "Gemfile.lock" modification time will be taken to find out
-whether the tags generation is required, just like in the custom directories case explained earlier.
-The plugin will create "Gemfile.lock.tags" file automatically
+The last but not least feature is the Ruby Bundler support. It's easy and
+straightforward. If your project root contains "Gemfile.lock" file, the plugin
+will be generating tags for all your Bundler gems referenced in the Gemfile.
+Here, "Gemfile.lock" modification time will be taken to find out whether the
+tags generation is required, just like in the custom directories case explained
+earlier. The plugin will create "Gemfile.lock.tags" file automatically
 
 
 <div id="configuration"></div>
 Configuration
 -------------
 
-Vim-Tags assumes that you have 'ctags' utility available in your shell. However it is possible to
-change or improve shell commands used by the plugin, e.g. in case you have to point a proper binary
-with absolute path or tweak some options.
+Vim-Tags assumes that you have 'ctags' utility available in your shell. However
+it is possible to change or improve shell commands used by the plugin, e.g. in
+case you have to point a proper binary with absolute path or tweak some options.
 
-Vim-Tags can be configured by setting some global variables in your '.vimrc' file. If you want to
-have some custom settings valid only for the current project create a local '.vimrc' file with those
-settings and add the following snippet to your main '.vimrc' file:
+Vim-Tags can be configured by setting some global variables in your '.vimrc'
+file. If you want to have some custom settings valid only for the current
+project create a local '.vimrc' file with those settings and add the following
+snippet to your main '.vimrc' file:
 
     set exrc
     set secure
@@ -116,54 +127,52 @@ The Vim-Tags available variables are:
         let g:vim_tags_auto_generate = 1
 
 
+* `vim_tags_ctags_binary`
+
+    * Default: `ctags`
+
+    This is the Ctags binary which will be substitued to the commands generating
+    ctags files. Sometimes needs to be customized, e.g. for MacVim I had to set
+    it Homebrew's ctags binary: `/usr/local/bin/ctags`.
 
 
 * `vim_tags_project_tags_command`
 
-    * Default: `"ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"`
+    * Default: `"{CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null"`
 
     This command is used for main Ctags generation.
 
-        let g:vim_tags_project_tags_command = "ctags -R {OPTIONS} {DIRECTORY} 2>/dev/null"
-
-
+        let g:vim_tags_project_tags_command = "{CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null"
 
 
 * `vim_tags_gems_tags_command`
 
-    * Default: ``"ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"``
+    * Default: ``"{CTAGS} -R {OPTIONS} `bundle show --paths` 2>/dev/null"``
 
     Command used for Gemfile tags generation.
 
-        let g:vim_tags_gems_tags_command = "ctags -R {OPTIONS} `bundle show --paths` 2>/dev/null"
-
-
+        let g:vim_tags_gems_tags_command = "{CTAGS} -R {OPTIONS} `bundle show --paths` 2>/dev/null"
 
 
 * `vim_tags_use_vim_dispatch`
 
-    * Default: `1`
+    * Default: `0`
 
     [`Vim-Dispatch`](https://github.com/tpope/vim-dispatch) is a plugin allowing asynchronous calls of
     system commands. `Vim-Tags` will try to use it (if found) to perform asynchronous tags generation.
     Otherwise `Vim-Tags` will make asynchronous calls by adding `&` to ctags commands.
 
-        let g:vim_tags_use_vim_dispatch = 1
+        let g:vim_tags_use_vim_dispatch = 0
 
 
-
-
-* `vim_tags_use_ycm`
+* `vim_tags_use_language_field`
 
     * Default: `1`
 
     Use `ctags` with `--field=+l` option necessary for the tag completion in the
-    [`YouCompleteMe`](https://github.com/Valloric/YouCompleteMe) plugin, if the YCM's tag completion
-    presence is detected.
+    [`YouCompleteMe`](https://github.com/Valloric/YouCompleteMe) or similar plugins
 
-        let g:vim_tags_use_ycm = 1
-
-
+        let g:vim_tags_use_language_field = 1
 
 
 * `vim_tags_ignore_files`
@@ -175,8 +184,6 @@ The Vim-Tags available variables are:
         let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore']
 
 
-
-
 * `vim_tags_ignore_file_comment_pattern`
 
     * Default: `'^[#"]'`
@@ -186,18 +193,14 @@ The Vim-Tags available variables are:
         let g:vim_tags_ignore_file_comment_pattern = '^[#"]'
 
 
-
-
 * `vim_tags_directories`
 
-    * Default: `['.git', '.svn', 'CVS']`
+    * Default: `[".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]`
 
     The default directories list where the tags files will be created. The first one found will be
     used. If none exists the current directory (`'.'`) will be taken.
 
-        let g:vim_tags_directories = ['.git', '.svn', 'CVS']
-
-
+        let g:vim_tags_directories = [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]
 
 
 * `vim_tags_main_file`
@@ -209,8 +212,6 @@ The Vim-Tags available variables are:
         let g:vim_tags_main_file = 'tags'
 
 
-
-
 * `vim_tags_extension`
 
     * Default: `'.tags'`
@@ -220,10 +221,8 @@ The Vim-Tags available variables are:
         let g:vim_tags_extension = '.tags'
 
 
+Authors and License
+-------------------
 
-
-Author and License
-------------------
-
-Vim-Tags plugin was written by Szymon Wrozynski and Contributors. It is licensed under the same
-terms as Vim itself. For more info see `:help license`.
+Vim-Tags plugin was written by Szymon Wrozynski and Contributors. It is licensed
+under the same terms as Vim itself. For more info see `:help license`.
