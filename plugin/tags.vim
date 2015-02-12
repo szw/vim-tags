@@ -284,10 +284,18 @@ fun! s:generate_tags(bang, redraw)
 
     call s:add_tags_location(gems_path)
 
-    " check if bundle is working fine
-    silent! exe '!bundle check'
+    if !exists("s:gemfile_correctness")
+      let s:gemfile_correctness = { "time": 0, "error": 0 }
+    endif
 
-    if !v:shell_error
+    " check if bundle works fine
+    if s:gemfile_correctness.time != gemfile_time
+      silent! exe '!bundle check'
+      let s:gemfile_correctness.error = v:shell_error
+      let s:gemfile_correctness.time  = gemfile_time
+    endif
+
+    if !s:gemfile_correctness.error
       if gems_time > -1
         if (gems_time < gemfile_time) || (getfsize(gems_path) == 0)
           call s:execute_async_command(gems_command)
