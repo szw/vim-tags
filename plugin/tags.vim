@@ -290,7 +290,7 @@ fun! s:generate_tags(bang, redraw)
 
     " check if bundle works fine
     if s:gemfile_correctness.time != gemfile_time
-      silent! exe '!bundle check'
+      silent! exe '!bundle check &>/dev/null'
       let s:gemfile_correctness.error = v:shell_error
       let s:gemfile_correctness.time  = gemfile_time
     endif
