@@ -327,5 +327,5 @@ fun! s:generate_tags(bang, redraw)
 endfun
 
 if g:vim_tags_auto_generate
-  au BufWritePost * call s:generate_tags(0, 0)
+  au BufEnter,BufWritePost * call s:generate_tags(0, 0)
 endif
