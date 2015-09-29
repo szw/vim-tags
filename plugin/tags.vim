@@ -114,13 +114,18 @@ endfunction
 function s:add_tags_location(location)
   let location = substitute(a:location, '^\./', '', '')
 
-  if exists("s:locations[location]")
+  let abs_location = fnamemodify(a:location, ":p")
+  let tags_list = split(&tags, ',')
+  if index(tags_list, abs_location) != -1
     return
   endif
 
-  silent! exe 'set tags+=' . location
-  let s:locations[location] = 1
-  let s:dirty_locations = 1
+  silent! exe 'setlocal tags+=' . abs_location
+
+  if !exists("s:locations[location]")
+    let s:locations[location] = 1
+    let s:dirty_locations = 1
+  endif
 endfunction
 
 function! s:generate_options()
@@ -322,5 +327,5 @@ fun! s:generate_tags(bang, redraw)
 endfun
 
 if g:vim_tags_auto_generate
-  au BufWritePost * call s:generate_tags(0, 0)
+  au BufEnter,BufWritePost * call s:generate_tags(0, 0)
 endif
