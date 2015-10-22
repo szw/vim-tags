@@ -258,7 +258,7 @@ The Vim-Tags available variables are:
 
     The directory for cache files (`.vt_location`).
 
-        let g:vim_tags_extension = expand($HOME)
+        let g:vim_tags_cache_dir = expand($HOME)
 
 
 Authors and License
