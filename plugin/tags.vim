@@ -33,7 +33,7 @@ endif
 
 " Main tags
 if !exists('g:vim_tags_project_tags_command')
-  let g:vim_tags_project_tags_command = "{CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null"
+  let g:vim_tags_project_tags_command = "({CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null) \&\& ({PLACE_TAGS})"
 endif
 
 " Gemfile tags
@@ -161,9 +161,11 @@ function! s:generate_options()
   endif
 
   " Add main tags file to tags option
-  call s:add_tags_location(s:tags_directory . '/' . g:vim_tags_main_file)
+  let main_file = s:tags_directory . '/' . g:vim_tags_main_file
 
-  call add(options, '-f ' . s:tags_directory . '/' . g:vim_tags_main_file)
+  call s:add_tags_location(main_file)
+
+  call add(options, '-f ' . main_file . '.tmp')
 
   for f in split(globpath(s:tags_directory, '*' . g:vim_tags_extension, 1), '\n')
     let dir_name = f[strlen(s:tags_directory) + 1:-6]
@@ -176,7 +178,7 @@ function! s:generate_options()
     call s:add_tags_location(f)
   endfor
 
-  return join(options, ' ')
+  return [ join(options, ' '), main_file ]
 endfunction
 
 function! s:find_project_root()
@@ -231,7 +233,9 @@ fun! s:generate_tags(bang, redraw)
   let project_root = s:find_project_root()
   silent! exe "cd " . project_root
 
-  let options = s:generate_options()
+  let options_and_file = s:generate_options()
+  let options = options_and_file[0]
+  let main_file = options_and_file[1]
 
   "Remove existing tags
   if a:bang
@@ -261,7 +265,9 @@ fun! s:generate_tags(bang, redraw)
 
     if (getftime(file_name) < dir_time) || (getfsize(file_name) == 0)
       let custom_tags_command = substitute(g:vim_tags_project_tags_command, '{DIRECTORY}', shellescape(dir_name), '')
-      let custom_tags_command = substitute(custom_tags_command, '{OPTIONS}', '--tag-relative -f ' . shellescape(file_name), '')
+      let esc_f = shellescape(file_name)
+      let custom_tags_command = substitute(custom_tags_command, '{OPTIONS}', '--tag-relative -f ' . esc_f . '.tmp', '')
+      let custom_tags_command = substitute(custom_tags_command, '{PLACE_TAGS}', 'mv ' . esc_f . '.tmp ' . esc_f, '')
       call s:execute_async_command(custom_tags_command)
     endif
   endfor
@@ -269,11 +275,14 @@ fun! s:generate_tags(bang, redraw)
   "Project tags file
   let project_tags_command = substitute(g:vim_tags_project_tags_command, '{OPTIONS}', options, '')
   let project_tags_command = substitute(project_tags_command, '{DIRECTORY}', '.', '')
+  let project_tags_command = substitute(project_tags_command, '{PLACE_TAGS}', 'mv ' . main_file . '.tmp ' . main_file, '')
   call s:execute_async_command(project_tags_command)
 
   " Append files from negated patterns
   if !empty(s:files_to_include)
-    let append_command_template = substitute(g:vim_tags_project_tags_command, '{OPTIONS}', '--tag-relative -a -f ' . s:tags_directory . '/' . g:vim_tags_main_file, '')
+    let main_file = s:tags_directory . '/' . g:vim_tags_main_file
+    let append_command_template = substitute(g:vim_tags_project_tags_command, '{OPTIONS}', '--tag-relative -a -f ' . main_file, '')
+    let append_command_template = substitute(g:vim_tags_project_tags_command, '{PLACE_TAGS}', 'mv ' . main_file . '.tmp ' . main_file, '')
     for file_to_include in s:files_to_include
       call s:execute_async_command(substitute(append_command_template, '{DIRECTORY}', file_to_include, ''))
     endfor
