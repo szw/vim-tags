@@ -170,7 +170,7 @@ The Vim-Tags available variables are:
 
     This command is used for main Ctags generation.
 
-        let g:vim_tags_project_tags_command = "{CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null"
+        let g:vim_tags_project_tags_command = "({CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null) \&\& ({PLACE_TAGS})"
 
 
 * `vim_tags_gems_tags_command`
