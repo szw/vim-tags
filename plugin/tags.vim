@@ -129,7 +129,7 @@ function s:add_tags_location(location)
 endfunction
 
 function! s:generate_options()
-  let options = ['--tag-relative']
+  let options = ['--tag-relative=yes']
 
   let s:custom_dirs      = []
   let s:files_to_include = []
