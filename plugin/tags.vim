@@ -38,7 +38,7 @@ endif
 
 " Gemfile tags
 if !exists('g:vim_tags_gems_tags_command')
-  let g:vim_tags_gems_tags_command = "{CTAGS} -R {OPTIONS} `bundle show --paths` 2>/dev/null"
+  let g:vim_tags_gems_tags_command = "{CTAGS} -R {OPTIONS} `bundle list` 2>/dev/null"
 endif
 
 " Ignored files and directories list
